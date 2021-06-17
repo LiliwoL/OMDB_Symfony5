@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Film: {{ movie.title }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ movie.title }}</h1>
+
+    <img src="{{ movie.poster }}">
+
+
+    <a href="{{ path('movie_list') }}">Retour à la liste de Tous les films</a>
+
+{% endblock %}

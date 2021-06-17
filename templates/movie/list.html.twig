@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des films{% endblock %}
+
+{% block body %}
+    <h1>Liste des films</h1>
+
+
+    Il y a {{ movieList|length }} films dans la base.
+
+
+    {# Parcours de movieList #}
+    {% if movieList|length > 0 %}
+
+        Affichage de la liste:
+        <ul class="list-group">
+            {% for movie in movieList %}
+                <li class="list-group-item">
+                    <a href="{{ path( 'movie_getMovie', {idMovie: movie.id} ) }}">                    
+                        <img src="{{ movie.poster }}">
+                        {{ movie.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+{% endblock %}

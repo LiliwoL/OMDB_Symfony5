@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+
+    {{form_errors(form)}}
+
+    {# { dump(form) } #}
+
+    <div class="form-control">
+        {{form_row(form.name, {'label': 'Nom via twig'}) }}
+    </div>
+
+    
+    {{ form_widget(form) }}
+
+    
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
