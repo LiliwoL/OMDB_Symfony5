@@ -25,7 +25,9 @@
             </tr>
             <tr>
                 <th>Photo</th>
-                <td>{{ actor.photo }}</td>
+                <td>
+                    <img src="{{ actor.photo }}" alt="Photo de {{ actor.name }} {{ actor.surname }}" class="img-fluid">
+                </td>
             </tr>
         </tbody>
     </table>

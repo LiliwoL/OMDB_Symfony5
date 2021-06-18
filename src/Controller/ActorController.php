@@ -12,15 +12,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/actor")
+ * @Route("/actor", name="actor_")
  */
 class ActorController extends AbstractController
 {
     /**
-     * @Route("/", name="actor_index", methods={"GET"})
+     * @Route("s", name="index", methods={"GET"})
      */
     public function index(ActorRepository $actorRepository, LoggerInterface $log): Response
     {
+        // Ajout d'un message via le logger
         $log->error("Affichage de la liste des acteurs");
 
         return $this->render('actor/index.html.twig', [
@@ -29,7 +30,7 @@ class ActorController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="actor_new", methods={"GET","POST"})
+     * @Route("/new", name="new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
@@ -59,7 +60,7 @@ class ActorController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="actor_show", methods={"GET"})
+     * @Route("/{id}", name="show", methods={"GET"})
      */
     public function show(Actor $actor): Response
     {
@@ -69,7 +70,7 @@ class ActorController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="actor_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit", name="edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Actor $actor): Response
     {
@@ -89,7 +90,7 @@ class ActorController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="actor_delete", methods={"POST"})
+     * @Route("/{id}", name="delete", methods={"POST"})
      */
     public function delete(Request $request, Actor $actor): Response
     {
