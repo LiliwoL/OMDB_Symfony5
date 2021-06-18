@@ -34,7 +34,7 @@ class MovieRepository extends ServiceEntityRepository
     }
 
     /**
-     * Returns a QueryBuilder to retireve movies without censorship
+     * Returns a list of movies without censorship
      * 
      * @return Movies[] Returns an array of Movies
      */

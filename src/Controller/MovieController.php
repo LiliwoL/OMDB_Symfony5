@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use App\Entity\Movie;
+use App\Form\ShareMovieMailType;
 use App\Repository\MovieRepository;
+use App\Service\Slugifier;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -145,7 +147,7 @@ class MovieController extends AbstractController
      *    name="addForm"
      * )
      */
-    public function addForm(Request $request, EntityManagerInterface $em) : Response{
+    public function addForm(Request $request, EntityManagerInterface $em, Slugifier $slugifier) : Response{
 
         // Instance d'entité
         $movie = new Movie();
@@ -176,12 +178,16 @@ class MovieController extends AbstractController
         $formulaireAjoutFilm->handleRequest($request);
 
         // Test du formulaire
-        if ($formulaireAjoutFilm->isSubmitted())
+        if ($formulaireAjoutFilm->isSubmitted() && $formulaireAjoutFilm->isValid())
         {
           // Compléter le contenu de l'instance $movie
           $movie = $formulaireAjoutFilm->getData();
 
           // $movie est donc une instance de Entity Movie avec les infos saisies dans le form
+
+          // Avant l'insertion en base on va ajouter le champ Slug
+          $slug = $slugifier->slugify($movie->getTitle());
+          $movie->setSlug($slug);
 
           // Appel a l'entity manager pour insertion en base
           $em->persist($movie);
@@ -301,10 +307,31 @@ class MovieController extends AbstractController
           );
         }
 
+        // ########### Ajout du formulaire de partage par mail
+        $formulaireMail = $this->createForm(          
+          // Nom du FormType
+          ShareMovieMailType::class,
+
+          //Data à passer au formulaire
+          null,
+          [
+            // Action du formulaire
+            'action' => $this->generateUrl(
+              'Share Movie', // Nom de la route
+              // Paramètres à envoyer à la route
+              [
+                'id' => $idMovie
+              ]
+            )
+          ]
+        )->createView();
+
         return $this->render(
             'movie/get.html.twig',
             [
-                'movie' => $movie
+                'movie' => $movie,
+                // Formulaire de partage
+                'formulaireMail' => $formulaireMail
             ]
         );
     }

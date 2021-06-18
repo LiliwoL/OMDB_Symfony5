@@ -39,8 +39,15 @@ class ActorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            
             $entityManager->persist($actor);
             $entityManager->flush();
+
+            // Ajout d'un message de confirmation
+            $this->addFlash(
+                'success',
+                'La fiche de l\'acteur.rice ' . $actor->getName() . " a bien été ajoutée!"
+            );
 
             return $this->redirectToRoute('actor_index');
         }

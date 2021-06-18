@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class ActorType extends AbstractType
 {
@@ -23,6 +24,10 @@ class ActorType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Nom',
                     'class' => 'form-control'
+                ],
+                'required' => true,
+                'constraints' => [
+                    new Length(['min' => 2])
                 ]
             ]
             )
@@ -32,11 +37,15 @@ class ActorType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Prénom',
                     'class' => 'form-control'
+                ],
+                'constraints' => [
+                    new Length(['min' => 2])
                 ]
             ]
             )
             ->add('nationality')
             ->add('photo', UrlType::class)
+            ->add('age')
             ->add('movies', EntityType::class,
             [
                 'label' => 'Films (censure est à vide)',
@@ -47,7 +56,7 @@ class ActorType extends AbstractType
 
                 // Query builder pour choisir les movies à afficher
                 'query_builder' => function(MovieRepository $movieRepository){
-                    return $movieRepository->findByEmptyCensorship();
+                    return $movieRepository->findByEmptyCensorshipQueryBuilder();
                 }
             ]
             )

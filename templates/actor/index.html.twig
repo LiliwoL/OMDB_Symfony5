@@ -1,9 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Actor index{% endblock %}
+{% block title %}Liste des acteur.rices{% endblock %}
 
 {% block body %}
-    <h1>Actor index</h1>
+    
+    {# Affichage des flashs error et success #}
+    {% for label, messages in app.flashes(['error', 'success') %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <h1>Liste Actor index</h1>
 
     <table class="table">
         <thead>

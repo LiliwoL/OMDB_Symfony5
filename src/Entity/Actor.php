@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass=ActorRepository::class)
  */
@@ -21,6 +23,9 @@ class Actor
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Assert\NotBlank
+     * @Assert\Length(min=2)
      */
     private $name;
 
@@ -31,6 +36,15 @@ class Actor
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * 
+     * 
+     * https://symfony.com/doc/current/reference/constraints/Length.html
+     * @Assert\Length(
+     *     min=2,
+     *     max=3,
+     *     minMessage="La nationalité doit avoir un minimum de {{ limit }} caractères",
+     *     maxMessage="La nationalité doit avoir un maximum de {{ limit }} caractères",
+     * )
      */
     private $nationality;
 
@@ -43,6 +57,29 @@ class Actor
      * @ORM\ManyToMany(targetEntity=Movie::class, inversedBy="actors")
      */
     private $movies;
+
+    /**
+     * @ORM\Column(type="integer", options={"default"=18})
+     * 
+     * On exige un age supérieure à 18 ans
+     * @Assert\Type(
+     *      type="integer",
+     *      message="Doit avoir plus de 18 ans!"
+     * )     * 
+     * 
+     * Autrement
+     * @Assert\GreaterThan(
+     *      value="17",
+     *      message="Il faut avoir plus de 18 ans pour être acteur.rice"
+     * )
+     * 
+     * En Regex
+     * Assert\Regex(
+     *      pattern="/^[2-9]{1}$/",
+     *      htmlPattern="^[2-9]{1}$"
+     * )
+     */
+    private $age;
 
     public function __construct()
     {
@@ -122,6 +159,18 @@ class Actor
     public function removeMovie(Movie $movie): self
     {
         $this->movies->removeElement($movie);
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(int $age): self
+    {
+        $this->age = $age;
 
         return $this;
     }
