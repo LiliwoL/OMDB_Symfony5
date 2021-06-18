@@ -1,0 +1,1420 @@
+[1mdiff --git a/.env b/.env[m
+[1mindex c812253..9ac5072 100644[m
+[1m--- a/.env[m
+[1m+++ b/.env[m
+[36m@@ -19,7 +19,7 @@[m [mAPP_SECRET=df7700a057854eebf08fe2510cfd8766[m
+ ###< symfony/framework-bundle ###[m
+ [m
+ ###> symfony/mailer ###[m
+[31m-# MAILER_DSN=smtp://localhost[m
+[32m+[m[32mMAILER_DSN=smtp://a01278339e03ac:079e3d0a3a9a8b@smtp.mailtrap.io:587[m
+ ###< symfony/mailer ###[m
+ [m
+ ###> doctrine/doctrine-bundle ###[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex b0978b1..14df468 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,5 +1,24 @@[m
+ [m
+ [m
+[32m+[m[32m# Installation de LDAP[m
+[32m+[m
+[32m+[m[32msudo apt install php-ldap[m
+[32m+[m
+[32m+[m[32m## Rédémarrage de Apache 2[m
+[32m+[m
+[32m+[m[32msudo service apache2 restart[m
+[32m+[m
+[32m+[m[32m# Dépendance symfony/ldap[m
+[32m+[m
+[32m+[m[32mcomposer require symfony/ldap[m
+[32m+[m
+[32m+[m[32m## Configuration dans servces.yaml[m
+[32m+[m
+[32m+[m[32mUtilisation du serveur ldap de test[m
+[32m+[m[32mhttps://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/[m
+[32m+[m
+[32m+[m
+[32m+[m[32m---[m
+ [m
+ # Installation de PostgreSQL[m
+ [m
+[1mdiff --git a/composer.json b/composer.json[m
+[1mindex 6a12f04..6e74cf0 100644[m
+[1m--- a/composer.json[m
+[1m+++ b/composer.json[m
+[36m@@ -24,6 +24,7 @@[m
+         "symfony/framework-bundle": "5.3.*",[m
+         "symfony/http-client": "5.3.*",[m
+         "symfony/intl": "5.3.*",[m
+[32m+[m[32m        "symfony/ldap": "5.3.*",[m
+         "symfony/mailer": "5.3.*",[m
+         "symfony/mime": "5.3.*",[m
+         "symfony/monolog-bundle": "^3.1",[m
+[36m@@ -45,6 +46,7 @@[m
+         "twig/twig": "^2.12|^3.0"[m
+     },[m
+     "require-dev": {[m
+[32m+[m[32m        "doctrine/doctrine-fixtures-bundle": "^3.4",[m
+         "phpunit/phpunit": "^9.5",[m
+         "symfony/browser-kit": "^5.3",[m
+         "symfony/css-selector": "^5.3",[m
+[1mdiff --git a/composer.lock b/composer.lock[m
+[1mindex b1afad5..afe2263 100644[m
+[1m--- a/composer.lock[m
+[1m+++ b/composer.lock[m
+[36m@@ -4,7 +4,7 @@[m
+         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",[m
+         "This file is @generated automatically"[m
+     ],[m
+[31m-    "content-hash": "4c87b659c1cc094afea542e37f1de2da",[m
+[32m+[m[32m    "content-hash": "e2a3a5530e6dd412195ee9d6560c8f2d",[m
+     "packages": [[m
+         {[m
+             "name": "composer/package-versions-deprecated",[m
+[36m@@ -1585,21 +1585,22 @@[m
+         },[m
+         {[m
+             "name": "laminas/laminas-code",[m
+[31m-            "version": "4.3.0",[m
+[32m+[m[32m            "version": "3.4.1",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/laminas/laminas-code.git",[m
+[31m-                "reference": "1beb4447f9efd26041eba7eff50614e798c353fd"[m
+[32m+[m[32m                "reference": "1cb8f203389ab1482bf89c0e70a04849bacd7766"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/laminas/laminas-code/zipball/1beb4447f9efd26041eba7eff50614e798c353fd",[m
+[31m-                "reference": "1beb4447f9efd26041eba7eff50614e798c353fd",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/laminas/laminas-code/zipball/1cb8f203389ab1482bf89c0e70a04849bacd7766",[m
+[32m+[m[32m                "reference": "1cb8f203389ab1482bf89c0e70a04849bacd7766",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[31m-                "laminas/laminas-eventmanager": "^3.3",[m
+[31m-                "php": "^7.4 || ~8.0.0"[m
+[32m+[m[32m                "laminas/laminas-eventmanager": "^2.6 || ^3.0",[m
+[32m+[m[32m                "laminas/laminas-zendframework-bridge": "^1.0",[m
+[32m+[m[32m                "php": "^7.1"[m
+             },[m
+             "conflict": {[m
+                 "phpspec/prophecy": "<1.9.0"[m
+[36m@@ -1608,20 +1609,24 @@[m
+                 "zendframework/zend-code": "self.version"[m
+             },[m
+             "require-dev": {[m
+[31m-                "doctrine/annotations": "^1.10.4",[m
+[32m+[m[32m                "doctrine/annotations": "^1.7",[m
+                 "ext-phar": "*",[m
+[31m-                "laminas/laminas-coding-standard": "^2.1.4",[m
+[31m-                "laminas/laminas-stdlib": "^3.3.0",[m
+[31m-                "phpunit/phpunit": "^9.4.2",[m
+[31m-                "psalm/plugin-phpunit": "^0.14.0",[m
+[31m-                "vimeo/psalm": "^4.3.1"[m
+[32m+[m[32m                "laminas/laminas-coding-standard": "^1.0",[m
+[32m+[m[32m                "laminas/laminas-stdlib": "^2.7 || ^3.0",[m
+[32m+[m[32m                "phpunit/phpunit": "^7.5.16 || ^8.4"[m
+             },[m
+             "suggest": {[m
+                 "doctrine/annotations": "Doctrine\\Common\\Annotations >=1.0 for annotation features",[m
+[31m-                "laminas/laminas-stdlib": "Laminas\\Stdlib component",[m
+[31m-                "laminas/laminas-zendframework-bridge": "A bridge with Zend Framework"[m
+[32m+[m[32m                "laminas/laminas-stdlib": "Laminas\\Stdlib component"[m
+             },[m
+             "type": "library",[m
+[32m+[m[32m            "extra": {[m
+[32m+[m[32m                "branch-alias": {[m
+[32m+[m[32m                    "dev-master": "3.4.x-dev",[m
+[32m+[m[32m                    "dev-develop": "3.5.x-dev",[m
+[32m+[m[32m                    "dev-dev-4.0": "4.0.x-dev"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+             "autoload": {[m
+                 "psr-4": {[m
+                     "Laminas\\Code\\": "src/"[m
+[36m@@ -1635,8 +1640,7 @@[m
+             "homepage": "https://laminas.dev",[m
+             "keywords": [[m
+                 "code",[m
+[31m-                "laminas",[m
+[31m-                "laminasframework"[m
+[32m+[m[32m                "laminas"[m
+             ],[m
+             "support": {[m
+                 "chat": "https://laminas.dev/chat",[m
+[36m@@ -1646,13 +1650,7 @@[m
+                 "rss": "https://github.com/laminas/laminas-code/releases.atom",[m
+                 "source": "https://github.com/laminas/laminas-code"[m
+             },[m
+[31m-            "funding": [[m
+[31m-                {[m
+[31m-                    "url": "https://funding.communitybridge.org/projects/laminas-project",[m
+[31m-                    "type": "community_bridge"[m
+[31m-                }[m
+[31m-            ],[m
+[31m-            "time": "2021-05-12T12:41:03+00:00"[m
+[32m+[m[32m            "time": "2019-12-31T16:28:24+00:00"[m
+         },[m
+         {[m
+             "name": "laminas/laminas-eventmanager",[m
+[36m@@ -2391,16 +2389,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/asset",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/asset.git",[m
+[31m-                "reference": "4c8d354b8931788f2b07953cfe6846e5cda27637"[m
+[32m+[m[32m                "reference": "29a4d5e6e39ffe16cea394fd5041d7a638bd580d"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/asset/zipball/4c8d354b8931788f2b07953cfe6846e5cda27637",[m
+[31m-                "reference": "4c8d354b8931788f2b07953cfe6846e5cda27637",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/asset/zipball/29a4d5e6e39ffe16cea394fd5041d7a638bd580d",[m
+[32m+[m[32m                "reference": "29a4d5e6e39ffe16cea394fd5041d7a638bd580d",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2444,7 +2442,7 @@[m
+             "description": "Manages URL generation and versioning of web assets such as CSS stylesheets, JavaScript files and image files",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/asset/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/asset/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2460,7 +2458,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-06T08:05:27+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/cache",[m
+[36m@@ -2639,16 +2637,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/config",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/config.git",[m
+[31m-                "reference": "9f4a448c2d7fd2c90882dfff930b627ddbe16810"[m
+[32m+[m[32m                "reference": "9c307728cfacbd50914f0db28aee1e0ecd82b99f"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/config/zipball/9f4a448c2d7fd2c90882dfff930b627ddbe16810",[m
+[31m-                "reference": "9f4a448c2d7fd2c90882dfff930b627ddbe16810",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/config/zipball/9c307728cfacbd50914f0db28aee1e0ecd82b99f",[m
+[32m+[m[32m                "reference": "9c307728cfacbd50914f0db28aee1e0ecd82b99f",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2698,7 +2696,7 @@[m
+             "description": "Helps you find, load, combine, autofill and validate configuration values of any kind",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/config/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/config/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2714,20 +2712,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T10:15:17+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/console",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/console.git",[m
+[31m-                "reference": "058553870f7809087fa80fa734704a21b9bcaeb2"[m
+[32m+[m[32m                "reference": "649730483885ff2ca99ca0560ef0e5f6b03f2ac1"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/console/zipball/058553870f7809087fa80fa734704a21b9bcaeb2",[m
+[31m-                "reference": "058553870f7809087fa80fa734704a21b9bcaeb2",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/console/zipball/649730483885ff2ca99ca0560ef0e5f6b03f2ac1",[m
+[32m+[m[32m                "reference": "649730483885ff2ca99ca0560ef0e5f6b03f2ac1",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2796,7 +2794,7 @@[m
+                 "terminal"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/console/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/console/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2812,20 +2810,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T09:42:48+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/dependency-injection",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/dependency-injection.git",[m
+[31m-                "reference": "94d973cb742d8c5c5dcf9534220e6b73b09af1d4"[m
+[32m+[m[32m                "reference": "ddbff73bc4fa3d5b415431d486770ab0e72f6516"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/94d973cb742d8c5c5dcf9534220e6b73b09af1d4",[m
+[31m-                "reference": "94d973cb742d8c5c5dcf9534220e6b73b09af1d4",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/ddbff73bc4fa3d5b415431d486770ab0e72f6516",[m
+[32m+[m[32m                "reference": "ddbff73bc4fa3d5b415431d486770ab0e72f6516",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -2884,7 +2882,7 @@[m
+             "description": "Allows you to standardize and centralize the way objects are constructed in your application",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/dependency-injection/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/dependency-injection/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -2900,7 +2898,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:57:12+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T09:17:04+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/deprecation-contracts",[m
+[36m@@ -3642,16 +3640,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/form",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/form.git",[m
+[31m-                "reference": "3f196ab4e1f0379a045c7d6f5eddc07417e9933e"[m
+[32m+[m[32m                "reference": "5179e4dacd4d0db7e20d00cb9c7b6b73344cdd51"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/form/zipball/3f196ab4e1f0379a045c7d6f5eddc07417e9933e",[m
+[31m-                "reference": "3f196ab4e1f0379a045c7d6f5eddc07417e9933e",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/form/zipball/5179e4dacd4d0db7e20d00cb9c7b6b73344cdd51",[m
+[32m+[m[32m                "reference": "5179e4dacd4d0db7e20d00cb9c7b6b73344cdd51",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3724,7 +3722,7 @@[m
+             "description": "Allows to easily create, process and reuse HTML forms",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/form/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/form/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -3740,20 +3738,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-27T12:56:16+00:00"[m
+[32m+[m[32m            "time": "2021-06-03T13:39:28+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/framework-bundle",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/framework-bundle.git",[m
+[31m-                "reference": "99196372c703b8cc97ee61d63d98acbf9896d425"[m
+[32m+[m[32m                "reference": "120e80e882debd7e705d53a3b054e1a0fae91fbc"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/framework-bundle/zipball/99196372c703b8cc97ee61d63d98acbf9896d425",[m
+[31m-                "reference": "99196372c703b8cc97ee61d63d98acbf9896d425",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/framework-bundle/zipball/120e80e882debd7e705d53a3b054e1a0fae91fbc",[m
+[32m+[m[32m                "reference": "120e80e882debd7e705d53a3b054e1a0fae91fbc",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3907,7 +3905,7 @@[m
+             "description": "Provides a tight integration between Symfony components and the Symfony full-stack framework",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/framework-bundle/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/framework-bundle/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -3923,20 +3921,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-31T10:12:54+00:00"[m
+[32m+[m[32m            "time": "2021-06-17T13:29:40+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/http-client",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/http-client.git",[m
+[31m-                "reference": "ef85ca5fa7a4f9c57592fab49faeccdf22b13136"[m
+[32m+[m[32m                "reference": "d2464f48482223c7c6826cd8c6ed7929d1ce6093"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/http-client/zipball/ef85ca5fa7a4f9c57592fab49faeccdf22b13136",[m
+[31m-                "reference": "ef85ca5fa7a4f9c57592fab49faeccdf22b13136",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/http-client/zipball/d2464f48482223c7c6826cd8c6ed7929d1ce6093",[m
+[32m+[m[32m                "reference": "d2464f48482223c7c6826cd8c6ed7929d1ce6093",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -3994,7 +3992,7 @@[m
+             "description": "Provides powerful methods to fetch HTTP resources synchronously or asynchronously",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/http-client/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/http-client/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -4010,7 +4008,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T10:15:17+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/http-client-contracts",[m
+[36m@@ -4092,16 +4090,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/http-foundation",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/http-foundation.git",[m
+[31m-                "reference": "8827b90cf8806e467124ad476acd15216c2fceb6"[m
+[32m+[m[32m                "reference": "7b6dd714d95106b831aaa7f3c9c612ab886516bd"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/8827b90cf8806e467124ad476acd15216c2fceb6",[m
+[31m-                "reference": "8827b90cf8806e467124ad476acd15216c2fceb6",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/7b6dd714d95106b831aaa7f3c9c612ab886516bd",[m
+[32m+[m[32m                "reference": "7b6dd714d95106b831aaa7f3c9c612ab886516bd",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -4145,7 +4143,7 @@[m
+             "description": "Defines an object-oriented layer for the HTTP specification",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/http-foundation/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/http-foundation/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -4161,20 +4159,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-02T09:32:00+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T10:15:17+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/http-kernel",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/http-kernel.git",[m
+[31m-                "reference": "74eb022e3bac36b3d3a897951a98759f2b32b864"[m
+[32m+[m[32m                "reference": "e7021165d9dbfb4051296b8de827e92c8a7b5c87"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/74eb022e3bac36b3d3a897951a98759f2b32b864",[m
+[31m-                "reference": "74eb022e3bac36b3d3a897951a98759f2b32b864",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/e7021165d9dbfb4051296b8de827e92c8a7b5c87",[m
+[32m+[m[32m                "reference": "e7021165d9dbfb4051296b8de827e92c8a7b5c87",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -4257,7 +4255,7 @@[m
+             "description": "Provides a structured process for converting a Request into a Response",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/http-kernel/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/http-kernel/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -4273,7 +4271,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-02T10:07:12+00:00"[m
+[32m+[m[32m            "time": "2021-06-17T14:18:27+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/intl",[m
+[36m@@ -4363,6 +4361,81 @@[m
+             ],[m
+             "time": "2021-05-27T12:28:50+00:00"[m
+         },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "symfony/ldap",[m
+[32m+[m[32m            "version": "v5.3.0",[m
+[32m+[m[32m            "source": {[m
+[32m+[m[32m                "type": "git",[m
+[32m+[m[32m                "url": "https://github.com/symfony/ldap.git",[m
+[32m+[m[32m                "reference": "f0f8f46ec69db0c68cc27f9036a9d2a21703622a"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "dist": {[m
+[32m+[m[32m                "type": "zip",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/ldap/zipball/f0f8f46ec69db0c68cc27f9036a9d2a21703622a",[m
+[32m+[m[32m                "reference": "f0f8f46ec69db0c68cc27f9036a9d2a21703622a",[m
+[32m+[m[32m                "shasum": ""[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require": {[m
+[32m+[m[32m                "ext-ldap": "*",[m
+[32m+[m[32m                "php": ">=7.2.5",[m
+[32m+[m[32m                "symfony/options-resolver": "^4.4|^5.0",[m
+[32m+[m[32m                "symfony/polyfill-php80": "^1.15"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "conflict": {[m
+[32m+[m[32m                "symfony/options-resolver": "<4.4",[m
+[32m+[m[32m                "symfony/security-core": "<5.3"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require-dev": {[m
+[32m+[m[32m                "symfony/security-core": "^5.3"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "type": "library",[m
+[32m+[m[32m            "autoload": {[m
+[32m+[m[32m                "psr-4": {[m
+[32m+[m[32m                    "Symfony\\Component\\Ldap\\": ""[m
+[32m+[m[32m                },[m
+[32m+[m[32m                "exclude-from-classmap": [[m
+[32m+[m[32m                    "/Tests/"[m
+[32m+[m[32m                ][m
+[32m+[m[32m            },[m
+[32m+[m[32m            "notification-url": "https://packagist.org/downloads/",[m
+[32m+[m[32m            "license": [[m
+[32m+[m[32m                "MIT"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "authors": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Charles Sarrazin",[m
+[32m+[m[32m                    "email": "charles@sarraz.in"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Symfony Community",[m
+[32m+[m[32m                    "homepage": "https://symfony.com/contributors"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "description": "Provides a LDAP client for PHP on top of PHP's ldap extension",[m
+[32m+[m[32m            "homepage": "https://symfony.com",[m
+[32m+[m[32m            "keywords": [[m
+[32m+[m[32m                "active directory",[m
+[32m+[m[32m                "ldap"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "support": {[m
+[32m+[m[32m                "source": "https://github.com/symfony/ldap/tree/v5.3.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "funding": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://symfony.com/sponsor",[m
+[32m+[m[32m                    "type": "custom"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://github.com/fabpot",[m
+[32m+[m[32m                    "type": "github"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",[m
+[32m+[m[32m                    "type": "tidelift"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m        },[m
+         {[m
+             "name": "symfony/mailer",[m
+             "version": "v5.3.0",[m
+[36m@@ -4440,16 +4513,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/mime",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/mime.git",[m
+[31m-                "reference": "ed710d297b181f6a7194d8172c9c2423d58e4852"[m
+[32m+[m[32m                "reference": "47dd7912152b82d0d4c8d9040dbc93d6232d472a"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/mime/zipball/ed710d297b181f6a7194d8172c9c2423d58e4852",[m
+[31m-                "reference": "ed710d297b181f6a7194d8172c9c2423d58e4852",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/mime/zipball/47dd7912152b82d0d4c8d9040dbc93d6232d472a",[m
+[32m+[m[32m                "reference": "47dd7912152b82d0d4c8d9040dbc93d6232d472a",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -4503,7 +4576,7 @@[m
+                 "mime-type"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/mime/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/mime/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -4519,7 +4592,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-09T10:58:01+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/monolog-bridge",[m
+[36m@@ -4850,16 +4923,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/password-hasher",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/password-hasher.git",[m
+[31m-                "reference": "d487faef0347d5351d3e361e123a73496595509f"[m
+[32m+[m[32m                "reference": "02320f981e26fdbeeaae575911e0afa7bdcae988"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/password-hasher/zipball/d487faef0347d5351d3e361e123a73496595509f",[m
+[31m-                "reference": "d487faef0347d5351d3e361e123a73496595509f",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/password-hasher/zipball/02320f981e26fdbeeaae575911e0afa7bdcae988",[m
+[32m+[m[32m                "reference": "02320f981e26fdbeeaae575911e0afa7bdcae988",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -4903,7 +4976,7 @@[m
+                 "password"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/password-hasher/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/password-hasher/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -4919,7 +4992,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-11T14:36:11+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/polyfill-intl-grapheme",[m
+[36m@@ -5583,16 +5656,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/process",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/process.git",[m
+[31m-                "reference": "53e36cb1c160505cdaf1ef201501669c4c317191"[m
+[32m+[m[32m                "reference": "714b47f9196de61a196d86c4bad5f09201b307df"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/process/zipball/53e36cb1c160505cdaf1ef201501669c4c317191",[m
+[31m-                "reference": "53e36cb1c160505cdaf1ef201501669c4c317191",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/process/zipball/714b47f9196de61a196d86c4bad5f09201b307df",[m
+[32m+[m[32m                "reference": "714b47f9196de61a196d86c4bad5f09201b307df",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -5625,7 +5698,7 @@[m
+             "description": "Executes commands in sub-processes",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/process/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/process/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -5641,7 +5714,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T12:52:38+00:00"[m
+[32m+[m[32m            "time": "2021-06-12T10:15:01+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/property-access",[m
+[36m@@ -5973,16 +6046,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/runtime",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/runtime.git",[m
+[31m-                "reference": "d119a381b76eb39c5c4f4ee284cb1dd431109c7c"[m
+[32m+[m[32m                "reference": "876ad7ce168c893550d20a1da58f52d3ec4eb574"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/runtime/zipball/d119a381b76eb39c5c4f4ee284cb1dd431109c7c",[m
+[31m-                "reference": "d119a381b76eb39c5c4f4ee284cb1dd431109c7c",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/runtime/zipball/876ad7ce168c893550d20a1da58f52d3ec4eb574",[m
+[32m+[m[32m                "reference": "876ad7ce168c893550d20a1da58f52d3ec4eb574",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6030,7 +6103,7 @@[m
+             "description": "Enables decoupling PHP applications from global state",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/runtime/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/runtime/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6046,20 +6119,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-11T12:51:21+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/security-bundle",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/security-bundle.git",[m
+[31m-                "reference": "c822d1ca612da832daad4be883bdc50f03127ad8"[m
+[32m+[m[32m                "reference": "971ff372d07aacc1c92d1efd0e80947f99323483"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/security-bundle/zipball/c822d1ca612da832daad4be883bdc50f03127ad8",[m
+[31m-                "reference": "c822d1ca612da832daad4be883bdc50f03127ad8",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/security-bundle/zipball/971ff372d07aacc1c92d1efd0e80947f99323483",[m
+[32m+[m[32m                "reference": "971ff372d07aacc1c92d1efd0e80947f99323483",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6076,7 +6149,7 @@[m
+                 "symfony/security-core": "^5.3",[m
+                 "symfony/security-csrf": "^4.4|^5.0",[m
+                 "symfony/security-guard": "^5.3",[m
+[31m-                "symfony/security-http": "^5.3"[m
+[32m+[m[32m                "symfony/security-http": "^5.3.2"[m
+             },[m
+             "conflict": {[m
+                 "symfony/browser-kit": "<4.4",[m
+[36m@@ -6132,7 +6205,7 @@[m
+             "description": "Provides a tight integration of the Security component into the Symfony full-stack framework",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/security-bundle/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/security-bundle/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6148,20 +6221,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-17T13:35:32+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/security-core",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/security-core.git",[m
+[31m-                "reference": "22714af1f701937a0a0bd3e3ec2a761baed3f2d0"[m
+[32m+[m[32m                "reference": "dc44d2a4275345621266356f6cb7ef6e0864c3fa"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/security-core/zipball/22714af1f701937a0a0bd3e3ec2a761baed3f2d0",[m
+[31m-                "reference": "22714af1f701937a0a0bd3e3ec2a761baed3f2d0",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/security-core/zipball/dc44d2a4275345621266356f6cb7ef6e0864c3fa",[m
+[32m+[m[32m                "reference": "dc44d2a4275345621266356f6cb7ef6e0864c3fa",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6225,7 +6298,7 @@[m
+             "description": "Symfony Security Component - Core Library",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/security-core/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/security-core/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6241,7 +6314,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-01T15:43:02+00:00"[m
+[32m+[m[32m            "time": "2021-06-15T17:42:09+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/security-csrf",[m
+[36m@@ -6383,16 +6456,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/security-http",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/security-http.git",[m
+[31m-                "reference": "195f7207dec4519ca8b0e407ba921ec239aa5cee"[m
+[32m+[m[32m                "reference": "6bf4c31219773a558b019ee12e54572174ff8129"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/security-http/zipball/195f7207dec4519ca8b0e407ba921ec239aa5cee",[m
+[31m-                "reference": "195f7207dec4519ca8b0e407ba921ec239aa5cee",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/security-http/zipball/6bf4c31219773a558b019ee12e54572174ff8129",[m
+[32m+[m[32m                "reference": "6bf4c31219773a558b019ee12e54572174ff8129",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6448,7 +6521,7 @@[m
+             "description": "Symfony Security Component - HTTP Integration",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/security-http/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/security-http/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6464,20 +6537,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-01T15:43:02+00:00"[m
+[32m+[m[32m            "time": "2021-06-17T13:35:32+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/serializer",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/serializer.git",[m
+[31m-                "reference": "ebb3dc397af77a08d734eea7305e0b2ec8c5e875"[m
+[32m+[m[32m                "reference": "96f6ff6582d1bf1bf08281b563a6c7c917efe6c1"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/serializer/zipball/ebb3dc397af77a08d734eea7305e0b2ec8c5e875",[m
+[31m-                "reference": "ebb3dc397af77a08d734eea7305e0b2ec8c5e875",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/serializer/zipball/96f6ff6582d1bf1bf08281b563a6c7c917efe6c1",[m
+[32m+[m[32m                "reference": "96f6ff6582d1bf1bf08281b563a6c7c917efe6c1",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6550,7 +6623,7 @@[m
+             "description": "Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON.",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/serializer/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/serializer/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6566,7 +6639,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-02T09:36:17+00:00"[m
+[32m+[m[32m            "time": "2021-06-10T18:05:39+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/service-contracts",[m
+[36m@@ -6711,16 +6784,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/string",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/string.git",[m
+[31m-                "reference": "a9a0f8b6aafc5d2d1c116dcccd1573a95153515b"[m
+[32m+[m[32m                "reference": "0732e97e41c0a590f77e231afc16a327375d50b0"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/string/zipball/a9a0f8b6aafc5d2d1c116dcccd1573a95153515b",[m
+[31m-                "reference": "a9a0f8b6aafc5d2d1c116dcccd1573a95153515b",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/string/zipball/0732e97e41c0a590f77e231afc16a327375d50b0",[m
+[32m+[m[32m                "reference": "0732e97e41c0a590f77e231afc16a327375d50b0",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6774,7 +6847,7 @@[m
+                 "utf8"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/string/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/string/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6790,20 +6863,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-06T09:51:56+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/translation",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/translation.git",[m
+[31m-                "reference": "251de0d921c42ef0a81494d8f37405421deefdf6"[m
+[32m+[m[32m                "reference": "7e2603bcc598e14804c4d2359d8dc4ee3c40391b"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/translation/zipball/251de0d921c42ef0a81494d8f37405421deefdf6",[m
+[31m-                "reference": "251de0d921c42ef0a81494d8f37405421deefdf6",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/translation/zipball/7e2603bcc598e14804c4d2359d8dc4ee3c40391b",[m
+[32m+[m[32m                "reference": "7e2603bcc598e14804c4d2359d8dc4ee3c40391b",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -6869,7 +6942,7 @@[m
+             "description": "Provides tools to internationalize your application",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/translation/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/translation/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -6885,7 +6958,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-29T22:28:28+00:00"[m
+[32m+[m[32m            "time": "2021-06-06T09:51:56+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/translation-contracts",[m
+[36m@@ -7175,16 +7248,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/validator",[m
+[31m-            "version": "v5.3.1",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/validator.git",[m
+[31m-                "reference": "111e71ac585a47358e808bc687dcaf66e568470a"[m
+[32m+[m[32m                "reference": "87621b2503601673b7e76aeffac3234ada8e1bf2"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/validator/zipball/111e71ac585a47358e808bc687dcaf66e568470a",[m
+[31m-                "reference": "111e71ac585a47358e808bc687dcaf66e568470a",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/validator/zipball/87621b2503601673b7e76aeffac3234ada8e1bf2",[m
+[32m+[m[32m                "reference": "87621b2503601673b7e76aeffac3234ada8e1bf2",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -7265,7 +7338,7 @@[m
+             "description": "Provides tools to validate values",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/validator/tree/v5.3.1"[m
+[32m+[m[32m                "source": "https://github.com/symfony/validator/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -7281,20 +7354,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-06-02T09:36:17+00:00"[m
+[32m+[m[32m            "time": "2021-06-17T12:34:27+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/var-dumper",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/var-dumper.git",[m
+[31m-                "reference": "1d3953e627fe4b5f6df503f356b6545ada6351f3"[m
+[32m+[m[32m                "reference": "905a22c68b292ffb6f20d7636c36b220d1fba5ae"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/1d3953e627fe4b5f6df503f356b6545ada6351f3",[m
+[31m-                "reference": "1d3953e627fe4b5f6df503f356b6545ada6351f3",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/905a22c68b292ffb6f20d7636c36b220d1fba5ae",[m
+[32m+[m[32m                "reference": "905a22c68b292ffb6f20d7636c36b220d1fba5ae",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -7353,7 +7426,7 @@[m
+                 "dump"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/var-dumper/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/var-dumper/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -7369,20 +7442,20 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-27T12:28:50+00:00"[m
+[32m+[m[32m            "time": "2021-06-06T09:51:56+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/var-exporter",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/var-exporter.git",[m
+[31m-                "reference": "7a7c9dd972541f78e7815c03c0bae9f81e0e9dbb"[m
+[32m+[m[32m                "reference": "df663fb63bdcd7298373cbd431165ab031706cb2"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/7a7c9dd972541f78e7815c03c0bae9f81e0e9dbb",[m
+[31m-                "reference": "7a7c9dd972541f78e7815c03c0bae9f81e0e9dbb",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/df663fb63bdcd7298373cbd431165ab031706cb2",[m
+[32m+[m[32m                "reference": "df663fb63bdcd7298373cbd431165ab031706cb2",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -7426,7 +7499,7 @@[m
+                 "serialize"[m
+             ],[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/var-exporter/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/var-exporter/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -7442,7 +7515,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:40:38+00:00"[m
+[32m+[m[32m            "time": "2021-06-09T10:57:10+00:00"[m
+         },[m
+         {[m
+             "name": "symfony/web-link",[m
+[36m@@ -7532,16 +7605,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/yaml",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/yaml.git",[m
+[31m-                "reference": "3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11"[m
+[32m+[m[32m                "reference": "71719ab2409401711d619765aa255f9d352a59b2"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/yaml/zipball/3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11",[m
+[31m-                "reference": "3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/yaml/zipball/71719ab2409401711d619765aa255f9d352a59b2",[m
+[32m+[m[32m                "reference": "71719ab2409401711d619765aa255f9d352a59b2",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -7587,7 +7660,7 @@[m
+             "description": "Loads and dumps YAML files",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/yaml/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/yaml/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -7603,7 +7676,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-06T09:51:56+00:00"[m
+         },[m
+         {[m
+             "name": "twig/extra-bundle",[m
+[36m@@ -7819,6 +7892,164 @@[m
+         }[m
+     ],[m
+     "packages-dev": [[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "doctrine/data-fixtures",[m
+[32m+[m[32m            "version": "1.5.0",[m
+[32m+[m[32m            "source": {[m
+[32m+[m[32m                "type": "git",[m
+[32m+[m[32m                "url": "https://github.com/doctrine/data-fixtures.git",[m
+[32m+[m[32m                "reference": "51d3d4880d28951fff42a635a2389f8c63baddc5"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "dist": {[m
+[32m+[m[32m                "type": "zip",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/doctrine/data-fixtures/zipball/51d3d4880d28951fff42a635a2389f8c63baddc5",[m
+[32m+[m[32m                "reference": "51d3d4880d28951fff42a635a2389f8c63baddc5",[m
+[32m+[m[32m                "shasum": ""[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require": {[m
+[32m+[m[32m                "doctrine/common": "^2.13|^3.0",[m
+[32m+[m[32m                "doctrine/persistence": "^1.3.3|^2.0",[m
+[32m+[m[32m                "php": "^7.2 || ^8.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "conflict": {[m
+[32m+[m[32m                "doctrine/phpcr-odm": "<1.3.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require-dev": {[m
+[32m+[m[32m                "doctrine/coding-standard": "^8.2",[m
+[32m+[m[32m                "doctrine/dbal": "^2.5.4",[m
+[32m+[m[32m                "doctrine/mongodb-odm": "^1.3.0 || ^2.0.0",[m
+[32m+[m[32m                "doctrine/orm": "^2.7.0",[m
+[32m+[m[32m                "ext-sqlite3": "*",[m
+[32m+[m[32m                "phpunit/phpunit": "^8.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "suggest": {[m
+[32m+[m[32m                "alcaeus/mongo-php-adapter": "For using MongoDB ODM 1.3 with PHP 7 (deprecated)",[m
+[32m+[m[32m                "doctrine/mongodb-odm": "For loading MongoDB ODM fixtures",[m
+[32m+[m[32m                "doctrine/orm": "For loading ORM fixtures",[m
+[32m+[m[32m                "doctrine/phpcr-odm": "For loading PHPCR ODM fixtures"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "type": "library",[m
+[32m+[m[32m            "autoload": {[m
+[32m+[m[32m                "psr-4": {[m
+[32m+[m[32m                    "Doctrine\\Common\\DataFixtures\\": "lib/Doctrine/Common/DataFixtures"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "notification-url": "https://packagist.org/downloads/",[m
+[32m+[m[32m            "license": [[m
+[32m+[m[32m                "MIT"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "authors": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Jonathan Wage",[m
+[32m+[m[32m                    "email": "jonwage@gmail.com"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "description": "Data Fixtures for all Doctrine Object Managers",[m
+[32m+[m[32m            "homepage": "http://www.doctrine-project.org",[m
+[32m+[m[32m            "keywords": [[m
+[32m+[m[32m                "database"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "support": {[m
+[32m+[m[32m                "issues": "https://github.com/doctrine/data-fixtures/issues",[m
+[32m+[m[32m                "source": "https://github.com/doctrine/data-fixtures/tree/1.5.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "funding": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://www.doctrine-project.org/sponsorship.html",[m
+[32m+[m[32m                    "type": "custom"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://www.patreon.com/phpdoctrine",[m
+[32m+[m[32m                    "type": "patreon"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdata-fixtures",[m
+[32m+[m[32m                    "type": "tidelift"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "time": "2021-01-23T10:20:43+00:00"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        {[m
+[32m+[m[32m            "name": "doctrine/doctrine-fixtures-bundle",[m
+[32m+[m[32m            "version": "3.4.0",[m
+[32m+[m[32m            "source": {[m
+[32m+[m[32m                "type": "git",[m
+[32m+[m[32m                "url": "https://github.com/doctrine/DoctrineFixturesBundle.git",[m
+[32m+[m[32m                "reference": "870189619a7770f468ffb0b80925302e065a3b34"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "dist": {[m
+[32m+[m[32m                "type": "zip",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/doctrine/DoctrineFixturesBundle/zipball/870189619a7770f468ffb0b80925302e065a3b34",[m
+[32m+[m[32m                "reference": "870189619a7770f468ffb0b80925302e065a3b34",[m
+[32m+[m[32m                "shasum": ""[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require": {[m
+[32m+[m[32m                "doctrine/data-fixtures": "^1.3",[m
+[32m+[m[32m                "doctrine/doctrine-bundle": "^1.11|^2.0",[m
+[32m+[m[32m                "doctrine/orm": "^2.6.0",[m
+[32m+[m[32m                "doctrine/persistence": "^1.3.7|^2.0",[m
+[32m+[m[32m                "php": "^7.1 || ^8.0",[m
+[32m+[m[32m                "symfony/config": "^3.4|^4.3|^5.0",[m
+[32m+[m[32m                "symfony/console": "^3.4|^4.3|^5.0",[m
+[32m+[m[32m                "symfony/dependency-injection": "^3.4|^4.3|^5.0",[m
+[32m+[m[32m                "symfony/doctrine-bridge": "^3.4|^4.1|^5.0",[m
+[32m+[m[32m                "symfony/http-kernel": "^3.4|^4.3|^5.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "require-dev": {[m
+[32m+[m[32m                "doctrine/coding-standard": "^6.0",[m
+[32m+[m[32m                "phpunit/phpunit": "^7.4 || ^8.0 || ^9.2",[m
+[32m+[m[32m                "symfony/phpunit-bridge": "^4.1|^5.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "type": "symfony-bundle",[m
+[32m+[m[32m            "autoload": {[m
+[32m+[m[32m                "psr-4": {[m
+[32m+[m[32m                    "Doctrine\\Bundle\\FixturesBundle\\": ""[m
+[32m+[m[32m                }[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "notification-url": "https://packagist.org/downloads/",[m
+[32m+[m[32m            "license": [[m
+[32m+[m[32m                "MIT"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "authors": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Fabien Potencier",[m
+[32m+[m[32m                    "email": "fabien@symfony.com"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Doctrine Project",[m
+[32m+[m[32m                    "homepage": "http://www.doctrine-project.org"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "name": "Symfony Community",[m
+[32m+[m[32m                    "homepage": "http://symfony.com/contributors"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "description": "Symfony DoctrineFixturesBundle",[m
+[32m+[m[32m            "homepage": "http://www.doctrine-project.org",[m
+[32m+[m[32m            "keywords": [[m
+[32m+[m[32m                "Fixture",[m
+[32m+[m[32m                "persistence"[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "support": {[m
+[32m+[m[32m                "issues": "https://github.com/doctrine/DoctrineFixturesBundle/issues",[m
+[32m+[m[32m                "source": "https://github.com/doctrine/DoctrineFixturesBundle/tree/3.4.0"[m
+[32m+[m[32m            },[m
+[32m+[m[32m            "funding": [[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://www.doctrine-project.org/sponsorship.html",[m
+[32m+[m[32m                    "type": "custom"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://www.patreon.com/phpdoctrine",[m
+[32m+[m[32m                    "type": "patreon"[m
+[32m+[m[32m                },[m
+[32m+[m[32m                {[m
+[32m+[m[32m                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdoctrine-fixtures-bundle",[m
+[32m+[m[32m                    "type": "tidelift"[m
+[32m+[m[32m                }[m
+[32m+[m[32m            ],[m
+[32m+[m[32m            "time": "2020-11-14T09:36:49+00:00"[m
+[32m+[m[32m        },[m
+         {[m
+             "name": "myclabs/deep-copy",[m
+             "version": "1.10.2",[m
+[36m@@ -9958,16 +10189,16 @@[m
+         },[m
+         {[m
+             "name": "symfony/web-profiler-bundle",[m
+[31m-            "version": "v5.3.0",[m
+[32m+[m[32m            "version": "v5.3.2",[m
+             "source": {[m
+                 "type": "git",[m
+                 "url": "https://github.com/symfony/web-profiler-bundle.git",[m
+[31m-                "reference": "275350559a4817881419ac959ceb3b308199fcf2"[m
+[32m+[m[32m                "reference": "8feb731cfc248cce5c0ac6eeba63ec4923c6a264"[m
+             },[m
+             "dist": {[m
+                 "type": "zip",[m
+[31m-                "url": "https://api.github.com/repos/symfony/web-profiler-bundle/zipball/275350559a4817881419ac959ceb3b308199fcf2",[m
+[31m-                "reference": "275350559a4817881419ac959ceb3b308199fcf2",[m
+[32m+[m[32m                "url": "https://api.github.com/repos/symfony/web-profiler-bundle/zipball/8feb731cfc248cce5c0ac6eeba63ec4923c6a264",[m
+[32m+[m[32m                "reference": "8feb731cfc248cce5c0ac6eeba63ec4923c6a264",[m
+                 "shasum": ""[m
+             },[m
+             "require": {[m
+[36m@@ -10016,7 +10247,7 @@[m
+             "description": "Provides a development tool that gives detailed information about the execution of any request",[m
+             "homepage": "https://symfony.com",[m
+             "support": {[m
+[31m-                "source": "https://github.com/symfony/web-profiler-bundle/tree/v5.3.0"[m
+[32m+[m[32m                "source": "https://github.com/symfony/web-profiler-bundle/tree/v5.3.2"[m
+             },[m
+             "funding": [[m
+                 {[m
+[36m@@ -10032,7 +10263,7 @@[m
+                     "type": "tidelift"[m
+                 }[m
+             ],[m
+[31m-            "time": "2021-05-26T17:43:10+00:00"[m
+[32m+[m[32m            "time": "2021-06-07T14:51:59+00:00"[m
+         },[m
+         {[m
+             "name": "theseer/tokenizer",[m
+[1mdiff --git a/config/bundles.php b/config/bundles.php[m
+[1mindex cd98906..f73cc30 100644[m
+[1m--- a/config/bundles.php[m
+[1m+++ b/config/bundles.php[m
+[36m@@ -12,4 +12,5 @@[m [mreturn [[m
+     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],[m
+     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],[m
+     Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],[m
+[32m+[m[32m    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],[m
+ ];[m
+[1mdiff --git a/config/packages/security.yaml b/config/packages/security.yaml[m
+[1mindex 030c4de..0c96bc5 100644[m
+[1m--- a/config/packages/security.yaml[m
+[1m+++ b/config/packages/security.yaml[m
+[36m@@ -1,16 +1,18 @@[m
+ security:[m
+     # https://symfony.com/doc/current/security/experimental_authenticators.html[m
+     enable_authenticator_manager: true[m
+[32m+[m
+[32m+[m
+     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers[m
+     providers:[m
+[31m-        users_in_memory: { memory: null }[m
+[32m+[m[32m        # used to reload user from session & other features (e.g. switch_user)[m
+[32m+[m[32m        in_memory: { memory: null }[m
+     firewalls:[m
+         dev:[m
+             pattern: ^/(_(profiler|wdt)|css|images|js)/[m
+             security: false[m
+         main:[m
+             lazy: true[m
+[31m-            provider: users_in_memory[m
+ [m
+             # activate different ways to authenticate[m
+             # https://symfony.com/doc/current/security.html#firewalls-authentication[m
+[36m@@ -23,3 +25,9 @@[m [msecurity:[m
+     access_control:[m
+         # - { path: ^/admin, roles: ROLE_ADMIN }[m
+         # - { path: ^/profile, roles: ROLE_USER }[m
+[32m+[m
+[32m+[m[32m        # allow unauthenticated users to access the login form[m
+[32m+[m[32m        - { path: ^/admin/login, roles: PUBLIC_ACCESS }[m
+[32m+[m
+[32m+[m[32m        # but require authentication for all other admin routes[m
+[32m+[m[32m        - { path: ^/admin, roles: ROLE_ADMIN }[m
+[1mdiff --git a/src/Form/ActorType.php b/src/Form/ActorType.php[m
+[1mindex 49615b3..44cdba6 100644[m
+[1m--- a/src/Form/ActorType.php[m
+[1m+++ b/src/Form/ActorType.php[m
+[36m@@ -37,6 +37,9 @@[m [mclass ActorType extends AbstractType[m
+             )[m
+             ->add('nationality')[m
+             ->add('photo', UrlType::class)[m
+[32m+[m[41m            [m
+[32m+[m[32m            // EntityType Filed[m
+[32m+[m[32m            // https://symfony.com/doc/current/reference/forms/types/entity.html#using-a-custom-query-for-the-entities[m
+             ->add('movies', EntityType::class,[m
+             [[m
+                 'label' => 'Films (censure est à vide)',[m
+[36m@@ -46,6 +49,7 @@[m [mclass ActorType extends AbstractType[m
+                 'multiple' => true,[m
+ [m
+                 // Query builder pour choisir les movies à afficher[m
+[32m+[m[32m                // https://symfony.com/doc/current/reference/forms/types/entity.html#using-a-custom-query-for-the-entities[m
+                 'query_builder' => function(MovieRepository $movieRepository){[m
+                     return $movieRepository->findByEmptyCensorship();[m
+                 }[m
+[1mdiff --git a/symfony.lock b/symfony.lock[m
+[1mindex 00cc1da..afb7741 100644[m
+[1m--- a/symfony.lock[m
+[1m+++ b/symfony.lock[m
+[36m@@ -23,6 +23,9 @@[m
+     "doctrine/common": {[m
+         "version": "3.1.2"[m
+     },[m
+[32m+[m[32m    "doctrine/data-fixtures": {[m
+[32m+[m[32m        "version": "1.5.0"[m
+[32m+[m[32m    },[m
+     "doctrine/dbal": {[m
+         "version": "2.13.1"[m
+     },[m
+[36m@@ -45,6 +48,18 @@[m
+             "src/Repository/.gitignore"[m
+         ][m
+     },[m
+[32m+[m[32m    "doctrine/doctrine-fixtures-bundle": {[m
+[32m+[m[32m        "version": "3.0",[m
+[32m+[m[32m        "recipe": {[m
+[32m+[m[32m            "repo": "github.com/symfony/recipes",[m
+[32m+[m[32m            "branch": "master",[m
+[32m+[m[32m            "version": "3.0",[m
+[32m+[m[32m            "ref": "e5b542d4ef47d8a003c91beb35650c76907f7e53"[m
+[32m+[m[32m        },[m
+[32m+[m[32m        "files": [[m
+[32m+[m[32m            "src/DataFixtures/AppFixtures.php"[m
+[32m+[m[32m        ][m
+[32m+[m[32m    },[m
+     "doctrine/doctrine-migrations-bundle": {[m
+         "version": "3.1",[m
+         "recipe": {[m
+[36m@@ -367,6 +382,9 @@[m
+     "symfony/intl": {[m
+         "version": "v5.3.0"[m
+     },[m
+[32m+[m[32m    "symfony/ldap": {[m
+[32m+[m[32m        "version": "v5.3.0"[m
+[32m+[m[32m    },[m
+     "symfony/mailer": {[m
+         "version": "4.3",[m
+         "recipe": {[m

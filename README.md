@@ -1,5 +1,24 @@
 
 
+# Installation de LDAP
+
+sudo apt install php-ldap
+
+## Rédémarrage de Apache 2
+
+sudo service apache2 restart
+
+# Dépendance symfony/ldap
+
+composer require symfony/ldap
+
+## Configuration dans servces.yaml
+
+Utilisation du serveur ldap de test
+https://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/
+
+
+---
 
 # Installation de PostgreSQL
 

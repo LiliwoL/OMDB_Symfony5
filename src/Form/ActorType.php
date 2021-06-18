@@ -37,6 +37,9 @@ class ActorType extends AbstractType
             )
             ->add('nationality')
             ->add('photo', UrlType::class)
+            
+            // EntityType Filed
+            // https://symfony.com/doc/current/reference/forms/types/entity.html#using-a-custom-query-for-the-entities
             ->add('movies', EntityType::class,
             [
                 'label' => 'Films (censure est à vide)',
@@ -46,6 +49,7 @@ class ActorType extends AbstractType
                 'multiple' => true,
 
                 // Query builder pour choisir les movies à afficher
+                // https://symfony.com/doc/current/reference/forms/types/entity.html#using-a-custom-query-for-the-entities
                 'query_builder' => function(MovieRepository $movieRepository){
                     return $movieRepository->findByEmptyCensorship();
                 }
