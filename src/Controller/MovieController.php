@@ -11,12 +11,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Component\HttpFoundation\Request;
 
+use App\Events;
 use App\Entity\Movie;
 use App\Form\ShareMovieMailType;
 use App\Repository\MovieRepository;
 use App\Service\Slugifier;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -147,7 +149,13 @@ class MovieController extends AbstractController
      *    name="addForm"
      * )
      */
-    public function addForm(Request $request, EntityManagerInterface $em, Slugifier $slugifier) : Response{
+    public function addForm(
+      Request $request, 
+      EntityManagerInterface $em, 
+      Slugifier $slugifier, 
+      EventDispatcherInterface $eventDispatcher
+    ) : Response
+    {
 
         // Instance d'entité
         $movie = new Movie();
@@ -172,9 +180,8 @@ class MovieController extends AbstractController
 
 
         // Prise en compte de la requete POST
-        // Dump de la requete
-        //dump($request);
-
+          // Dump de la requete
+          //dump($request);
         $formulaireAjoutFilm->handleRequest($request);
 
         // Test du formulaire
@@ -192,6 +199,10 @@ class MovieController extends AbstractController
           // Appel a l'entity manager pour insertion en base
           $em->persist($movie);
           $em->flush();
+
+          // Le movie a été validé et ajouté en base, on peut dispatcher l'événément
+          $event = new GenericEvent("Film ajouté " . $movie->getTitle());
+          $eventDispatcher->dispatch($event, Events::MOVIE_CREATED);
 
           // Renvoie vers la liste des films
           $response = $this->redirectToRoute(
